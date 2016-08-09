@@ -10,7 +10,8 @@ const token = Waterline.Collection.extend({
 	attributes: {
 		userId: 'string',
 		token: 'string',
-		enabled: 'boolean'
+		enabled: 'boolean',
+		exiresIn: 'date'
 	}
 });
 

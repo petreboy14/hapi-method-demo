@@ -1,6 +1,7 @@
 const Boom = require('boom');
 const Hapi = require('hapi');
 const Joi = require('joi');
+const moment = require('moment');
 const Promise = require('bluebird');
 
 const token = require('./models/token');
@@ -25,17 +26,25 @@ server.connection({ port: 8080 });
 server.method('tokens.create', (data, cb) => {
 	return token.getModel()
 		.then((model) => {
-			return model.create(data);
+			let date = moment();
+			date.add('5', 'minutes');
+
+			let tokenInfo = {
+				userId: data.userId,
+				token: data.token,
+				expiresIn: date.toDate()
+			}
+			return model.create(tokenInfo);
 		}).nodeify(cb);
 });
 
 // server method to get a token. if the token is found in the persisted store
 // it will both return the token and cache it
 server.method('tokens.get', (params, cb) => {
-	console.log('i am in the method');
+	let date = moment();
 	return token.getModel()
 		.then((model) => {
-			return model.findOne({ token: params.token });
+			return model.findOne({ token: params.token, expiresIn: { '>=': date.toDate() } });
 		}).nodeify(cb);
 }, {
 	cache: {
@@ -56,7 +65,7 @@ server.method('tokens.get', (params, cb) => {
 // times (and by extension) the 'tokens.get' method will cause the token data to
 // be returned from cache. After 10 seconds the token will fall out of cache but can
 // still be retrieved from persistent storage. In the real world we'd want to have the
-// ability to time out the persistent storage as well. 
+// ability to time out the persistent storage as well.
 server.route({
 	method: 'GET',
 	path: '/auth/token',
