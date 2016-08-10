@@ -4,7 +4,8 @@
   "description": "Shows methods doing their magic",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests"
+    "test": "mocha",
+    "coverage": "istanbul cover --root lib --include-all-sources _mocha -- -R spec ./test"
   },
   "repository": {
     "type": "git",
@@ -21,9 +22,15 @@
     "boom": "^3.2.2",
     "catbox-redis": "^2.0.2",
     "hapi": "^14.1.0",
+    "hoek": "^4.0.2",
     "joi": "^9.0.4",
     "moment": "^2.14.1",
     "sails-memory": "^0.10.7",
     "waterline": "^0.12.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "require-uncached": "^1.0.2",
+    "sinon": "^1.17.5"
   }
 }
